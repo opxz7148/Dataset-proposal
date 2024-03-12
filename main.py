@@ -25,6 +25,9 @@ def add_relate_artist(artist_id: str, related_dict: dict, detail_dict:dict):
     artist = sp.artist(artist_id)
     artist_relate = sp.artist_related_artists(artist_id)
 
+    if artist['id'] not in detail_dict['artist_id']:
+        add_artist_detail(artist, detail_dict)
+
     for relate in artist_relate['artists']:
         related_dict['artist_name'].append(artist['name'])
         related_dict['artist_id'].append(artist['id'])
@@ -35,8 +38,6 @@ def add_relate_artist(artist_id: str, related_dict: dict, detail_dict:dict):
             new_artist = sp.artist(relate['id'])
             add_artist_detail(new_artist, detail_dict)
 
-    if artist['id'] not in detail_dict['artist_id']:
-        add_artist_detail(artist, detail_dict)
 
 
 def add_artist_detail(artist: dict, detail_dict: dict):
