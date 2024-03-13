@@ -6,13 +6,17 @@ import pandas as pd
 
 print(sys.argv)
 
-if len(sys.argv) != 2:
-    sys.exit(1, "Must pass only 1 spotify artist link as parameter")
+
+if not 2 <= len(sys.argv) <= 3:
+    sys.exit(1, "Must pass only 1 spotify artist link as parameter and more detail indicator")
 
 load_dotenv()
 
 auth_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(auth_manager=auth_manager)
+
+if sys.argv[1] == 0:
+    sys.exit(1)
 
 
 def add_relate_artist(artist_id: str, related_dict: dict, detail_dict:dict):
@@ -35,9 +39,7 @@ def add_relate_artist(artist_id: str, related_dict: dict, detail_dict:dict):
         related_dict['related_artist_id'].append(relate['id'])
 
         if relate['id'] not in detail_dict['artist_id']:
-            new_artist = sp.artist(relate['id'])
-            add_artist_detail(new_artist, detail_dict)
-
+            add_artist_detail(relate, detail_dict)
 
 
 def add_artist_detail(artist: dict, detail_dict: dict):
@@ -78,8 +80,11 @@ def created_20x20_related_table(artist_id: str):
     add_relate_artist(artist_id, link_table, detail_table)
 
     all_relate_id = [related for related in link_table['related_artist_id']]
-
     [add_relate_artist(related_id, link_table, detail_table) for related_id in all_relate_id]
+
+    if len(sys.argv) == 3:
+        more_related_id = [related for related in link_table['related_artist_id'] if related not in link_table['artist_id']]
+        [add_relate_artist(related_id, link_table, detail_table) for related_id in more_related_id]
 
     link_data = pd.DataFrame(link_table)
     detail_data = pd.DataFrame(detail_table)
