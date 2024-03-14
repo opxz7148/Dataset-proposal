@@ -7,8 +7,6 @@ import pandas as pd
 if not 2 <= len(sys.argv) <= 3:
     sys.exit(1, "Must pass only 1 spotify artist link as parameter and size indicator")
 
-load_dotenv()
-
 auth_manager = SpotifyClientCredentials()
 sp = spotipy.Spotify(auth_manager=auth_manager)
 
