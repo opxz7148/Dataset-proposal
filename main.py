@@ -1,5 +1,4 @@
 import sys
-from dotenv import load_dotenv
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import pandas as pd
