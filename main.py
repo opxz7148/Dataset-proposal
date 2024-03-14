@@ -4,11 +4,8 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import pandas as pd
 
-print(sys.argv)
-
-
 if not 2 <= len(sys.argv) <= 3:
-    sys.exit(1, "Must pass only 1 spotify artist link as parameter and more detail indicator")
+    sys.exit(1, "Must pass only 1 spotify artist link as parameter and size indicator")
 
 load_dotenv()
 
@@ -60,12 +57,15 @@ def add_artist_detail(artist: dict, detail_dict: dict):
     detail_dict['external_url'].append(artist['external_urls']['spotify'])
 
 
-def created_20x20_related_table(artist_id: str):
+def created_20x20_related_table(artist_id: str, level:int):
     """
     Create csv file by querying from spotify API by find 20 artist that similar to artist that pass in as parameter.
     For each related artist there will be more 20 artist that relate to that relate artist.
     :param artist_id: Spotify artist link
     """
+
+    assert isinstance(level, int)
+
     link_table = {
         'artist_name': [],
         'artist_id': [],
@@ -84,27 +84,24 @@ def created_20x20_related_table(artist_id: str):
 
     add_relate_artist(artist_id, link_table, detail_table)
 
-    all_relate_id = [related for related in link_table['related_artist_id']]
-    [add_relate_artist(related_id, link_table, detail_table) for related_id in all_relate_id]
-
-    if len(sys.argv) == 3:
-        more_related_id = [related for related in link_table['related_artist_id'] if related not in link_table['artist_id']]
+    for i in range(level):
+        more_related_id = [related
+                           for related in link_table['related_artist_id'] if
+                           related not in link_table['artist_id']]
         [add_relate_artist(related_id, link_table, detail_table) for related_id in more_related_id]
 
-    link_data = pd.DataFrame(link_table)
-    detail_data = pd.DataFrame(detail_table)
-
-    if len(sys.argv) == 2:
-        link_data.to_csv(f'result/{link_table["artist_name"][0]}_related.csv', index=False)
-        detail_data.to_csv(f'result/{link_table["artist_name"][0]}_detail.csv', index=False)
-
-    if len(sys.argv) == 3:
-        link_data.to_csv(f'result/{link_table["artist_name"][0]}_related_more.csv', index=False)
-        detail_data.to_csv(f'result/{link_table["artist_name"][0]}_detail_more.csv', index=False)
+    pd.DataFrame(link_table).to_csv(
+        f'result/{level}_level_{link_table["artist_name"][0]}_related.csv',
+        index=False
+    )
+    pd.DataFrame(detail_table).to_csv(
+        f'result/{level}_level_{link_table["artist_name"][0]}_detail.csv',
+        index=False
+    )
 
 
 try:
-    created_20x20_related_table(sys.argv[1])
+    created_20x20_related_table(sys.argv[1], int(sys.argv[2]))
     print("CSV created")
 except spotipy.SpotifyException:
     sys.exit("Link invalid")
