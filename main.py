@@ -29,6 +29,8 @@ def add_relate_artist(artist_id: str, related_dict: dict, detail_dict:dict):
     artist = sp.artist(artist_id)
     artist_relate = sp.artist_related_artists(artist_id)
 
+    print(f"Add {artist['name']} relate artist")
+
     if artist['id'] not in detail_dict['artist_id']:
         add_artist_detail(artist, detail_dict)
 
@@ -43,6 +45,9 @@ def add_relate_artist(artist_id: str, related_dict: dict, detail_dict:dict):
 
 
 def add_artist_detail(artist: dict, detail_dict: dict):
+
+    print(f"Add {artist['name']} to detailed table")
+
     detail_dict['artist_name'].append(artist['name'])
     detail_dict['artist_id'].append(artist['id'])
     detail_dict['genres'].append(", ".join(artist['genres']))
@@ -89,8 +94,14 @@ def created_20x20_related_table(artist_id: str):
     link_data = pd.DataFrame(link_table)
     detail_data = pd.DataFrame(detail_table)
 
-    link_data.to_csv(f'result/{link_table["artist_name"][0]}_related.csv', index=False)
-    detail_data.to_csv(f'result/{link_table["artist_name"][0]}_detail.csv', index=False)
+    if len(sys.argv) == 2:
+        link_data.to_csv(f'result/{link_table["artist_name"][0]}_related.csv', index=False)
+        detail_data.to_csv(f'result/{link_table["artist_name"][0]}_detail.csv', index=False)
+
+    if len(sys.argv) == 3:
+        link_data.to_csv(f'result/{link_table["artist_name"][0]}_related_more.csv', index=False)
+        detail_data.to_csv(f'result/{link_table["artist_name"][0]}_detail_more.csv', index=False)
+
 
 try:
     created_20x20_related_table(sys.argv[1])
