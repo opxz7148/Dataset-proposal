@@ -26,8 +26,9 @@
 
 * #### **How to run program**
   * In case more example is need this how to run a program
-  * Install `spotipy` library `pip install spotipy`
-  * Install `pandas` library `pip install pandas`
+  * Install `pipenv` library `pip install pipenv`
+  * Start virtual environment `pipenv --python 3.11`
+  * Install require library `pipenv sync`
   * Add API key in [This file](.env)
   * Run program `python main.py {spotify artist link} {dept of data}`
   * For an example `python main.py 'https://open.spotify.com/artist/6d24kC5fxHFOSEAmjQPPhc?si=MzXRZvpIQhqQ47ySKjqQNQ' 0`
